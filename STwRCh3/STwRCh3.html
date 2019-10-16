@@ -1,0 +1,322 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="" xml:lang="">
+  <head>
+    <title>Chapter 3: Spatio-temporal Statistical Models</title>
+    <meta charset="utf-8" />
+    <link href="libs/remark-css-0.0.1/default.css" rel="stylesheet" />
+    <link href="libs/remark-css-0.0.1/default-fonts.css" rel="stylesheet" />
+  </head>
+  <body>
+    <textarea id="source">
+class: center, middle, inverse, title-slide
+
+# Chapter 3: Spatio-temporal Statistical Models
+## Spatio-temporal Statistics with R
+
+---
+
+
+
+
+# Three goals
+
+![](STwRCh3_files/figure-html/unnamed-chunk-2-1.png)&lt;!-- --&gt;
+
+---
+
+# Prediction
+
+
+```r
+pred_df &lt;- tibble(x = 0.5,
+                  y = 0.5,
+                  t = 3)
+p + facet_wrap(~ t, ncol = 2L, drop = TRUE) +
+  geom_point(aes(x = x, y = y), data = pred_df,
+             shape = 8, size = 5, inherit.aes = FALSE)
+```
+
+![](STwRCh3_files/figure-html/unnamed-chunk-3-1.png)&lt;!-- --&gt;
+
+---
+
+# Inference
+
+
+```r
+p + facet_wrap(~ t, ncol = 2L, drop = TRUE)
+```
+
+![](STwRCh3_files/figure-html/unnamed-chunk-4-1.png)&lt;!-- --&gt;
+
+---
+
+# Inference
+
+
+```r
+ggplot(dat, aes(x = x, y = val)) +
+  geom_smooth(method = lm, se = FALSE, col = "black") +
+  geom_point(aes(col = t)) +
+  guides(color = FALSE) +
+  labs(x = "Covariate", y = "Value") +
+  theme_bw()
+```
+
+![](STwRCh3_files/figure-html/unnamed-chunk-5-1.png)&lt;!-- --&gt;
+
+---
+
+# Forecasting
+
+
+```r
+p + facet_wrap(~ t, ncol = 2L, drop = TRUE)
+```
+
+![](STwRCh3_files/figure-html/unnamed-chunk-6-1.png)&lt;!-- --&gt;
+
+---
+
+# Forecasting
+
+
+```r
+pred_df2 &lt;- tibble(x = 0.5,
+                   y = 0.5,
+                   t = factor(4, levels = 1:4))
+p + facet_wrap(~ t, ncol = 2L, drop = FALSE) +
+  geom_point(aes(x = x, y = y), data = pred_df2,
+             shape = 8, size = 5, inherit.aes = FALSE)
+```
+
+![](STwRCh3_files/figure-html/unnamed-chunk-7-1.png)&lt;!-- --&gt;
+
+---
+
+# Tobler's law
+
+Close observations will be more similar than distant observations
+
+---
+
+# Deterministic prediction
+
+
+```r
+knitr::include_graphics("figs/fig31_max_temp.png")
+```
+
+&lt;img src="figs/fig31_max_temp.png" width="1543" /&gt;
+
+---
+
+# Deterministic prediction
+
+Inverse distance weighting
+
+`$$Z(s_0, t_0) = \sum_{j=1}^T \sum_{i=1}^{m_j} w_{ij}(s_0, t_0) Z(s_{ij}, t_j)$$`
+
+`$$w_{ij}(s_0,t_0) = \frac{\tilde{w}_{ij}(s_0,t_0)}{\sum_{k=1}^T\sum_{\ell=1}^{m_k}\tilde{w}_{\ell k}(s_0,t_0)}$$`
+
+`$$\tilde{w}(s_0,t_0) = \frac{1}{d((s_{ij}, t_j), (s_0,t_0))^\alpha}$$`
+
+---
+
+# Deterministic prediction
+
+- Weights depend on distance in space and time.
+- `\(d\)` is a distance measure
+- This is an exact interpolator
+- `\(\alpha\)` determines smoothness (lower is smoother)
+
+---
+
+# Kernel functions
+
+Generalization of inverse distance weighting,
+
+`$$\tilde{w}_{ij}(s_0,t_0) = k((s_{ij}, t_j), (s_0,t_0);\alpha)$$`
+
+Another example is the squared-exponential kernel:
+
+`$$k((s_{ij}, t_j), (s_0,t_0); \theta) = \exp\left(-\frac{1}{\theta} d((s_{ij}, t_j), (s_0,t_0))^2\right)$$`
+
+---
+
+# Cross-validation
+
+Often used for choosing kernel parameters.
+
+
+```r
+knitr::include_graphics("figs/fig33_cv.png")
+```
+
+&lt;img src="figs/fig33_cv.png" width="1920" /&gt;
+
+---
+
+# Trend/regression estimation
+
+Can include covariates
+
+`$$Z(s_i,t_j) = \beta_0 + \beta_1 X_1(s_i,t_i) + \cdots + \epsilon(s_i,t_i)$$`
+
+`$$\epsilon \sim \operatorname{Normal}(0, \sigma^2)$$`
+
+---
+
+# Basis functions
+
+- Essentially a special type of covariate.
+- Can be local or global
+- Deterministic
+
+
+```r
+knitr::include_graphics("figs/fig34_basis_funs.png")
+```
+
+&lt;img src="figs/fig34_basis_funs.png" width="2260" /&gt;
+
+---
+
+# Basis functions
+
+
+```r
+knitr::include_graphics("figs/fig35_2d_basis.png")
+```
+
+&lt;img src="figs/fig35_2d_basis.png" width="1965" /&gt;
+
+---
+
+# Diagnostics: dependent errors
+
+
+```r
+knitr::include_graphics("figs/fig38_emp_vario.png")
+```
+
+&lt;img src="figs/fig38_emp_vario.png" width="1089" /&gt;
+
+# Diagnotsics: dependent errors
+
+Temporal: Durbin-Watson
+
+$$ 
+---
+
+# Inference
+
+---
+
+# Model selection
+
+---
+
+# Forecasting
+
+---
+
+# Non-Gaussian errors
+
+---
+
+# GLMs and GAMs
+
+---
+
+# Hierarchical spatio-temporal statistical models
+    </textarea>
+<style data-target="print-only">@media screen {.remark-slide-container{display:block;}.remark-slide-scaler{box-shadow:none;}}</style>
+<script src="https://remarkjs.com/downloads/remark-latest.min.js"></script>
+<script>var slideshow = remark.create({
+"highlightStyle": "github",
+"countIncrementalSlides": false
+});
+if (window.HTMLWidgets) slideshow.on('afterShowSlide', function (slide) {
+  window.dispatchEvent(new Event('resize'));
+});
+(function(d) {
+  var s = d.createElement("style"), r = d.querySelector(".remark-slide-scaler");
+  if (!r) return;
+  s.type = "text/css"; s.innerHTML = "@page {size: " + r.style.width + " " + r.style.height +"; }";
+  d.head.appendChild(s);
+})(document);
+
+(function(d) {
+  var el = d.getElementsByClassName("remark-slides-area");
+  if (!el) return;
+  var slide, slides = slideshow.getSlides(), els = el[0].children;
+  for (var i = 1; i < slides.length; i++) {
+    slide = slides[i];
+    if (slide.properties.continued === "true" || slide.properties.count === "false") {
+      els[i - 1].className += ' has-continuation';
+    }
+  }
+  var s = d.createElement("style");
+  s.type = "text/css"; s.innerHTML = "@media print { .has-continuation { display: none; } }";
+  d.head.appendChild(s);
+})(document);
+// delete the temporary CSS (for displaying all slides initially) when the user
+// starts to view slides
+(function() {
+  var deleted = false;
+  slideshow.on('beforeShowSlide', function(slide) {
+    if (deleted) return;
+    var sheets = document.styleSheets, node;
+    for (var i = 0; i < sheets.length; i++) {
+      node = sheets[i].ownerNode;
+      if (node.dataset["target"] !== "print-only") continue;
+      node.parentNode.removeChild(node);
+    }
+    deleted = true;
+  });
+})();</script>
+
+<script>
+(function() {
+  var links = document.getElementsByTagName('a');
+  for (var i = 0; i < links.length; i++) {
+    if (/^(https?:)?\/\//.test(links[i].getAttribute('href'))) {
+      links[i].target = '_blank';
+    }
+  }
+})();
+</script>
+
+<script>
+slideshow._releaseMath = function(el) {
+  var i, text, code, codes = el.getElementsByTagName('code');
+  for (i = 0; i < codes.length;) {
+    code = codes[i];
+    if (code.parentNode.tagName !== 'PRE' && code.childElementCount === 0) {
+      text = code.textContent;
+      if (/^\\\((.|\s)+\\\)$/.test(text) || /^\\\[(.|\s)+\\\]$/.test(text) ||
+          /^\$\$(.|\s)+\$\$$/.test(text) ||
+          /^\\begin\{([^}]+)\}(.|\s)+\\end\{[^}]+\}$/.test(text)) {
+        code.outerHTML = code.innerHTML;  // remove <code></code>
+        continue;
+      }
+    }
+    i++;
+  }
+};
+slideshow._releaseMath(document);
+</script>
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+(function () {
+  var script = document.createElement('script');
+  script.type = 'text/javascript';
+  script.src  = 'https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-MML-AM_CHTML';
+  if (location.protocol !== 'file:' && /^https?:/.test(script.src))
+    script.src  = script.src.replace(/^https?:/, '');
+  document.getElementsByTagName('head')[0].appendChild(script);
+})();
+</script>
+  </body>
+</html>
